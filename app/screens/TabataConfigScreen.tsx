@@ -1,18 +1,18 @@
 import React, { useState } from 'react';
 import {
   View, Text, TextInput, TouchableOpacity, StyleSheet,
-  ScrollView, SafeAreaView, Alert,
+  ScrollView, Alert,
 } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import { COLORS } from '../../constants/colors';
-import { TabataConfig } from '../../types/tabata';
-import { saveWorkout } from '../../services/tabataStorage';
-import { getTotalDuration } from '../../hooks/useTabataTimer';
+import { MaterialDesignIcons } from '@react-native-vector-icons/material-design-icons';
+import { COLORS } from '../constants/colors';
+import { TabataConfig } from '../types/tabata';
+import { saveWorkout } from '../services/tabataStorage';
+import { getTotalDuration } from '../hooks/useTabataTimer';
 
 type Props = {
   navigation: NativeStackNavigationProp<any>;
-  route: any;
+  route: any; 
 };
 
 const DEFAULT_CONFIG: Omit<TabataConfig, 'id' | 'name' | 'createdAt'> = {
@@ -89,10 +89,10 @@ export default function TabataConfigScreen({ navigation, route }: Props) {
   const total = getTotalDuration(previewConfig);
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
-          <Icon name="arrow-left" size={24} color="#fff" />
+          <MaterialDesignIcons name="arrow-left" size={24} color="#fff" />
         </TouchableOpacity>
         <Text style={styles.title}>{existing ? 'Editar entrenamiento' : 'Nuevo entrenamiento'}</Text>
         <View style={{ width: 32 }} />
@@ -124,7 +124,7 @@ export default function TabataConfigScreen({ navigation, route }: Props) {
                     style={styles.stepBtn}
                     onPress={() => adjust(field.key, -field.step, field.min, field.max)}
                   >
-                    <Icon name="minus" size={18} color={COLORS.primary} />
+                    <MaterialDesignIcons name="minus" size={18} color={COLORS.primary} />
                   </TouchableOpacity>
                   <Text style={styles.stepValue}>
                     {values[field.key]}
@@ -134,7 +134,7 @@ export default function TabataConfigScreen({ navigation, route }: Props) {
                     style={styles.stepBtn}
                     onPress={() => adjust(field.key, field.step, field.min, field.max)}
                   >
-                    <Icon name="plus" size={18} color={COLORS.primary} />
+                    <MaterialDesignIcons name="plus" size={18} color={COLORS.primary} />
                   </TouchableOpacity>
                 </View>
               </View>
@@ -144,17 +144,17 @@ export default function TabataConfigScreen({ navigation, route }: Props) {
 
         {/* Total */}
         <View style={styles.totalCard}>
-          <Icon name="timer-outline" size={22} color={COLORS.primary} />
+          <MaterialDesignIcons name="timer-outline" size={22} color={COLORS.primary} />
           <Text style={styles.totalText}>Duración total: <Text style={styles.totalValue}>{formatDuration(total)}</Text></Text>
         </View>
 
         {/* Guardar */}
         <TouchableOpacity style={styles.saveBtn} onPress={handleSave} activeOpacity={0.85}>
-          <Icon name="content-save" size={20} color="#fff" />
+          <MaterialDesignIcons name="content-save" size={20} color="#fff" />
           <Text style={styles.saveBtnText}>Guardar entrenamiento</Text>
         </TouchableOpacity>
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 }
 
@@ -169,6 +169,7 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     borderBottomLeftRadius: 20,
     borderBottomRightRadius: 20,
+    boxShadow: '0 2px 4px rgba(0,0,0,0.3), 0 4px 8px rgba(0,0,0,0.2)',
   },
   backBtn: { padding: 4 },
   title: { color: '#fff', fontSize: 18, fontWeight: '700' },
@@ -201,7 +202,7 @@ const styles = StyleSheet.create({
   rowLabel: { fontSize: 15, color: '#333', fontWeight: '500', flex: 1 },
   stepper: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   stepBtn: {
-    backgroundColor: COLORS.accent,
+    backgroundColor: COLORS.secondary,
     borderRadius: 20,
     width: 34,
     height: 34,
@@ -220,7 +221,7 @@ const styles = StyleSheet.create({
     gap: 10,
     marginBottom: 16,
   },
-  totalText: { fontSize: 15, color: '#333', fontWeight: '500' },
+  totalText: { fontSize: 15, color: '#FFF', fontWeight: '500' },
   totalValue: { color: COLORS.primary, fontWeight: '700' },
   saveBtn: {
     backgroundColor: COLORS.primary,
@@ -230,6 +231,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: 8,
+    boxShadow: '0 2px 4px rgba(0,0,0,0.3), 0 4px 8px rgba(0,0,0,0.2)',
   },
   saveBtnText: { color: '#fff', fontSize: 16, fontWeight: '700' },
 });

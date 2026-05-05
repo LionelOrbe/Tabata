@@ -82,6 +82,34 @@ export function useTabataTimer(config: TabataConfig) {
     cancelTabataNotifications();
   }, [totalDuration]);
 
+  const skip = useCallback(() => {
+    if (statusRef.current === 'finished') { return; }
+
+    // Calculamos el elapsed actual
+    const currentElapsed = statusRef.current === 'running'
+      ? baseElapsed.current + (Date.now() - startTimestamp.current) / 1000
+      : baseElapsed.current;
+
+    // Encontramos el inicio de la siguiente fase sumando el remaining actual
+    const currentInfo = getPhaseAtElapsed(config, currentElapsed);
+    if (currentInfo.phase === 'finished') { return; }
+
+    const nextElapsed = currentElapsed + currentInfo.remaining;
+
+    if (nextElapsed >= totalDuration) {
+      finish();
+      return;
+    }
+    // Actualizamos base y reiniciamos el timestamp si está corriendo
+    baseElapsed.current = nextElapsed;
+    if (statusRef.current === 'running') {
+      startTimestamp.current = Date.now();
+    }
+
+    lastPhaseRef.current = null;
+    setDisplayElapsed(nextElapsed);
+  }, [config, totalDuration, finish]);
+
   const tick = useCallback(() => {
     const e = baseElapsed.current + (Date.now() - startTimestamp.current) / 1000;
     if (e >= totalDuration) {
@@ -150,5 +178,5 @@ export function useTabataTimer(config: TabataConfig) {
 
   const phaseInfo = useMemo(() => getPhaseAtElapsed(config, displayElapsed), [config, displayElapsed]);
 
-  return { phaseInfo, status, totalDuration, displayElapsed, play, pause, reset };
+  return { phaseInfo, status, totalDuration, displayElapsed, play, pause, reset, skip };
 }

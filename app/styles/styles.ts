@@ -1,5 +1,5 @@
 import { StyleSheet } from 'react-native';
-import { COLORS } from '../../constants/colors';
+import { COLORS } from '../constants/colors';
 
 export const globalStyles = StyleSheet.create({
     container: {
@@ -31,7 +31,7 @@ export const globalStyles = StyleSheet.create({
         fontSize: 16,
     },
     shadow: {
-        shadowColor: '#000',
+        shadowColor: '#fff',
         shadowOffset: { width: 0, height: 1 },
         shadowOpacity: 0.3,
         shadowRadius: 3,

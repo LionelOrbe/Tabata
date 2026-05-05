@@ -1,12 +1,12 @@
 import React, { useMemo } from 'react';
 import {
   View, Text, TouchableOpacity, StyleSheet,
-  SafeAreaView, StatusBar, Alert,
+  StatusBar, Alert,
 } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import { TabataConfig, TabataPhase } from '../../types/tabata';
-import { useTabataTimer } from '../../hooks/useTabataTimer';
+import { MaterialDesignIcons } from '@react-native-vector-icons/material-design-icons';
+import { TabataConfig, TabataPhase } from '../types/tabata';
+import { useTabataTimer } from '../hooks/useTabataTimer';
 
 type Props = {
   navigation: NativeStackNavigationProp<any>;
@@ -31,7 +31,14 @@ const PHASE_LABELS: Record<TabataPhase, string> = {
   finished: '¡Completado!',
 };
 
-const PHASE_ICONS: Record<TabataPhase, string> = {
+const PHASE_ICONS: Record<TabataPhase, 
+  | "clock-outline"
+  | "lightning-bolt"
+  | "leaf"
+  | "coffee"
+  | "snowflake"
+  | "trophy"
+> = {
   prepare: 'clock-outline',
   work: 'lightning-bolt',
   rest: 'leaf',
@@ -49,7 +56,7 @@ function formatTime(seconds: number): string {
 
 export default function TabataTimerScreen({ navigation, route }: Props) {
   const config: TabataConfig = route.params.config;
-  const { phaseInfo, status, totalDuration, displayElapsed, play, pause, reset } = useTabataTimer(config);
+  const { phaseInfo, status, totalDuration, displayElapsed, play, pause, reset, skip } = useTabataTimer(config);
 
   const bgColor = PHASE_COLORS[phaseInfo.phase];
   const progressPct = totalDuration > 0 ? Math.min(displayElapsed / totalDuration, 1) * 100 : 0;
@@ -75,6 +82,12 @@ export default function TabataTimerScreen({ navigation, route }: Props) {
     }
   };
 
+  const skipPhase = () => {
+    if (typeof phaseInfo.phase !== 'undefined' && status !== 'finished') {
+      skip();
+    }
+  };
+
   const isFinished = phaseInfo.phase === 'finished';
 
   const phaseProgressPct = useMemo(() => {
@@ -91,17 +104,17 @@ export default function TabataTimerScreen({ navigation, route }: Props) {
   }, [phaseInfo, config, isFinished]);
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: bgColor }]}>
+    <View style={[styles.container, { backgroundColor: bgColor }]}>
       <StatusBar backgroundColor={bgColor} barStyle="light-content" />
 
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={handleBack} style={styles.backBtn}>
-          <Icon name="arrow-left" size={24} color="rgba(255,255,255,0.9)" />
+          <MaterialDesignIcons name="arrow-left" size={24} color="rgba(255,255,255,0.9)" />
         </TouchableOpacity>
         <Text style={styles.workoutName} numberOfLines={1}>{config.name}</Text>
         <TouchableOpacity onPress={reset} style={styles.resetBtn}>
-          <Icon name="restart" size={22} color="rgba(255,255,255,0.9)" />
+          <MaterialDesignIcons name="restart" size={22} color="rgba(255,255,255,0.9)" />
         </TouchableOpacity>
       </View>
 
@@ -127,7 +140,7 @@ export default function TabataTimerScreen({ navigation, route }: Props) {
 
       {/* Phase display */}
       <View style={styles.centerArea}>
-        <Icon name={PHASE_ICONS[phaseInfo.phase]} size={56} color="rgba(255,255,255,0.85)" style={styles.phaseIcon} />
+        <MaterialDesignIcons name={PHASE_ICONS[phaseInfo.phase]} size={56} color="rgba(255,255,255,0.85)" style={styles.phaseIcon} />
 
         <Text style={styles.phaseLabel}>{PHASE_LABELS[phaseInfo.phase]}</Text>
 
@@ -147,17 +160,24 @@ export default function TabataTimerScreen({ navigation, route }: Props) {
 
       {/* Controls */}
       <View style={styles.controls}>
-        {isFinished ? (
-          <TouchableOpacity style={styles.mainBtn} onPress={reset}>
-            <Icon name="restart" size={32} color="#fff" />
-            <Text style={styles.mainBtnText}>Repetir</Text>
-          </TouchableOpacity>
-        ) : (
-          <TouchableOpacity style={styles.mainBtn} onPress={togglePlay}>
-            <Icon name={status === 'running' ? 'pause' : 'play'} size={36} color="#fff" />
-            <Text style={styles.mainBtnText}>{status === 'running' ? 'Pausa' : status === 'paused' ? 'Reanudar' : 'Iniciar'}</Text>
-          </TouchableOpacity>
-        )}
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          {isFinished ? (
+            <TouchableOpacity style={[styles.mainBtn, {marginBottom: 45}]} onPress={reset}>
+              <MaterialDesignIcons name="restart" size={32} color="#fff" />
+              <Text style={styles.mainBtnText}>Repetir</Text>
+            </TouchableOpacity>
+          ) : (
+            <TouchableOpacity style={styles.mainBtn} onPress={togglePlay}>
+              <MaterialDesignIcons name={status === 'running' ? 'pause' : 'play'} size={36} color="#fff" />
+              <Text style={styles.mainBtnText}>{status === 'running' ? 'Pausa' : status === 'paused' ? 'Reanudar' : 'Iniciar'}</Text>
+            </TouchableOpacity>
+          )}
+          {status === 'running' && !isFinished && (
+            <TouchableOpacity style={[styles.skipBtn, { marginRight: 24 }]} onPress={skipPhase}>
+              <MaterialDesignIcons name="skip-next" size={28} color="#fff" />
+            </TouchableOpacity>
+          )}
+        </View>
       </View>
 
       {/* Total time remaining */}
@@ -166,7 +186,7 @@ export default function TabataTimerScreen({ navigation, route }: Props) {
           Tiempo total restante: {formatTime(totalDuration - displayElapsed)}
         </Text>
       )}
-    </SafeAreaView>
+    </View>
   );
 }
 
@@ -275,7 +295,7 @@ const styles = StyleSheet.create({
   },
   mainBtn: {
     backgroundColor: 'rgba(255,255,255,0.25)',
-    borderRadius: 50,
+    borderRadius: 100,
     width: 110,
     height: 110,
     alignItems: 'center',
@@ -283,6 +303,7 @@ const styles = StyleSheet.create({
     borderWidth: 3,
     borderColor: 'rgba(255,255,255,0.6)',
     gap: 4,
+    boxShadow: '0 2px 4px rgba(0,0,0,0.3), 0 4px 8px rgba(0,0,0,0.2)',
   },
   mainBtnText: {
     color: '#fff',
@@ -294,5 +315,19 @@ const styles = StyleSheet.create({
     fontSize: 13,
     textAlign: 'center',
     paddingBottom: 16,
+    marginBottom: 10,
+  },
+  skipBtn: {
+    position: 'absolute',
+    left: 135,
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: 'rgba(255,255,255,0.18)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 2,
+    borderColor: 'rgba(255,255,255,0.6)',
+    boxShadow: '0 2px 4px rgba(0,0,0,0.3), 0 4px 8px rgba(0,0,0,0.2)',
   },
 });

@@ -4,6 +4,8 @@ import {
 } from 'react-native-safe-area-context';
 import AppNavigator from './app/navigation/AppNavigator';
 import { COLORS } from './app/constants/colors';
+import { useEffect } from 'react';
+import BootSplash from 'react-native-bootsplash';
 
 function App() {
   
@@ -16,6 +18,10 @@ function App() {
 
 function AppContent() {
   const insets = useSafeAreaInsets();
+
+  useEffect(() => {
+    BootSplash.hide({ fade: true });
+  }, []);
 
   return (
     <View style={[styles.container, { paddingTop: insets.top, backgroundColor: COLORS.primary }]}>

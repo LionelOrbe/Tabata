@@ -1,8 +1,8 @@
 // Paleta de colores global para el proyecto
 export const COLORS = {
-  primary: '#40A2E3',      // Azul principal
-  secondary: '#0D9276',    // Verde
-  accent: '#BBE2EC',       // Celeste
-  background: '#F5F5F5',      // Fondo gris claro
+  primary: '#F78D60',      // Azul principal
+  secondary: '#064663',    // Verde
+  accent: '#04293A',       // Celeste
+  background: '#234C6A',      // Fondo gris claro
   red: '#EB5353',          // Rojo para acciones de cancelación o alerta
 };
