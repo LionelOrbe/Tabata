@@ -63,6 +63,7 @@ export default function TabataHomeScreen({ navigation }: Props) {
             <Text style={styles.emptyText}>Toca + para crear tu primer entrenamiento Tabata</Text>
           </View>
         }
+        showsVerticalScrollIndicator={false}
       />
     </View>
   );
@@ -88,7 +89,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     padding: 4,
   },
-  list: { padding: 16, gap: 8 },
+  list: { padding: 16, gap: 12 },
   emptyContainer: { flex: 1 },
   empty: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingVertical: 80, paddingHorizontal: 40 },
   emptyTitle: { fontSize: 20, fontWeight: '700', color: '#FFF', marginTop: 16, marginBottom: 8 },

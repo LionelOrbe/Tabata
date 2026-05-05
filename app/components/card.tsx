@@ -29,7 +29,8 @@ export default function SwipeableCard({
     }
 
     const pan = Gesture.Pan()
-        .activeOffsetX([10, 10])          // solo horizontal
+        .activeOffsetX([-15, 15])
+        .failOffsetY([-10, 10])  
         .onUpdate(e => {
             if (e.translationX > 0) translateX.value = e.translationX;
         })
@@ -52,14 +53,13 @@ export default function SwipeableCard({
     }));
 
     return (
-        <View style={styles.swipeContainer}>
-            {/* Fondo rojo que aparece mientras arrastrás */}
-            <Animated.View style={[styles.deleteBackground, redOpacity]}>
-                <MaterialDesignIcons name="trash-can-outline" size={22} color={'#FFF'} />
-                <Text style={styles.deleteLabel}>Eliminar</Text>
-            </Animated.View>
-
-            <GestureDetector gesture={pan}>
+        <GestureDetector gesture={pan}>
+            <Animated.View style={styles.swipeContainer}>
+                {/* Fondo rojo que aparece mientras arrastrás */}
+                <Animated.View style={[styles.deleteBackground, redOpacity]}>
+                    <MaterialDesignIcons name="trash-can-outline" size={22} color={'#FFF'} />
+                    <Text style={styles.deleteLabel}>Eliminar</Text>
+                </Animated.View>
                 <Animated.View style={[styles.card, animStyle]}>
                     <View style={styles.cardBorder} />
                     <View style={styles.cardLeft}>
@@ -78,8 +78,8 @@ export default function SwipeableCard({
                         </TouchableOpacity>
                     </View>
                 </Animated.View>
-            </GestureDetector>
-        </View>
+            </Animated.View>
+        </GestureDetector>
     );
 }
 
@@ -110,7 +110,7 @@ const styles = StyleSheet.create({
         borderBottomLeftRadius: 16,
     },
     swipeContainer: {
-        marginBottom: 12,
+        // marginBottom: 12,
         borderRadius: 16,
     },
     deleteBackground: {

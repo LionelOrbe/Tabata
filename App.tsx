@@ -20,7 +20,7 @@ function AppContent() {
   const insets = useSafeAreaInsets();
 
   useEffect(() => {
-    BootSplash.hide({ fade: true });
+    BootSplash.hide();
   }, []);
 
   return (
