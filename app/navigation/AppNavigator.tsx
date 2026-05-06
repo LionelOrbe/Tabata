@@ -5,12 +5,17 @@ import TabataHomeScreen from '../screens/TabataHomeScreen';
 import TabataConfigScreen from '../screens/TabataConfigScreen';
 import TabataTimerScreen from '../screens/TabataTimerScreen';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import BootSplash from "react-native-bootsplash";
 
 const Stack = createNativeStackNavigator();
 
 export default function AppNavigator() {
   return (
-    <NavigationContainer>
+    <NavigationContainer onReady={() => {
+      requestAnimationFrame(() => {
+        BootSplash.hide({ fade: true });
+      });
+    }}>
       <GestureHandlerRootView style={{ flex: 1 }}>
         <Stack.Navigator initialRouteName="TabataHome" screenOptions={{ headerShown: false }}>
           <Stack.Screen name="TabataHome" component={TabataHomeScreen} options={{ headerBackVisible: false, headerLeft: () => null }} />

@@ -71,13 +71,32 @@ export function useTabataTimer(config: TabataConfig) {
   const finishSoundRef = useRef<Sound | null>(null);
   const countdownSoundRef = useRef<Sound | null>(null);
   const lastCountdownSecRef = useRef(-1);
+  const isFirstTickRef = useRef(true);
+
+  const playSound = useCallback((sound?: Sound | null) => {
+    if (!sound) return;
+    sound.setCurrentTime(0);
+    sound.play();
+  }, []);
 
   useEffect(() => {
-    Sound.setCategory('Playback');
-    workSound.current = new Sound('whistle.wav', Sound.MAIN_BUNDLE);
-    restSound.current = new Sound('rest.mp3', Sound.MAIN_BUNDLE);
-    finishSoundRef.current = new Sound('gong.mp3', Sound.MAIN_BUNDLE);
-    countdownSoundRef.current = new Sound('beep.mp3', Sound.MAIN_BUNDLE);
+    Sound.setCategory('Playback', true);
+    const loadSound = (file: string) => {
+      const s = new Sound(file, Sound.MAIN_BUNDLE, (error) => {
+        if (error) return;
+        // OPTIMIZACIÓN: Forzar el pre-load en el buffer de Android
+        s.setVolume(1);
+        s.setSpeed(1);
+        s.stop();
+      });
+      return s;
+    };
+
+    workSound.current = loadSound('whistle.wav');
+    restSound.current = loadSound('rest.mp3');
+    finishSoundRef.current = loadSound('gong.mp3');
+    countdownSoundRef.current = loadSound('beep.wav');
+
     return () => {
       workSound.current?.release();
       restSound.current?.release();
@@ -141,33 +160,46 @@ export function useTabataTimer(config: TabataConfig) {
     setDisplayElapsed(e);
 
     const info = getPhaseAtElapsed(config, e);
-    if (lastPhaseRef.current && lastPhaseRef.current !== info.phase) {
-      Vibration.vibrate(info.phase === 'work' ? [0, 100, 50, 100] : [0, 100]);
-      lastCountdownSecRef.current = -1;
-      if (info.phase === 'work') workSound.current?.play();
-      else if (info.phase === 'rest') restSound.current?.play();
-      else if (info.phase === 'coolDown') restSound.current?.play();
+    const isStart = e < 0.15;
+    const prevInfo = getPhaseAtElapsed(config, e - 0.1); // 100ms antes
+
+    if (!isStart) {
+      if (prevInfo.phase !== info.phase) {
+        Vibration.vibrate(info.phase === 'work' ? [0, 100, 50, 100] : [0, 100]);
+        lastCountdownSecRef.current = -1;
+
+        // Solo suena si no estamos en el arranque
+        if (!isFirstTickRef.current) {
+          if (info.phase === 'work') playSound(workSound.current);
+          else if (['rest', 'restBetweenSets', 'coolDown'].includes(info.phase)) {
+            playSound(restSound.current);
+          }
+        }
+      }
     }
-    lastPhaseRef.current = info.phase;
-    const remainingCeil = Math.ceil(info.remaining);
+    if (e > 0.2) {
+      isFirstTickRef.current = false;
+    }
+    const remainingFloor = Math.floor(info.remaining);
     if (
       info.phase !== 'finished' &&
-      remainingCeil <= 3 &&
-      remainingCeil > 0 &&
-      remainingCeil !== lastCountdownSecRef.current
+      remainingFloor <= 3 &&
+      remainingFloor > 0 &&
+      remainingFloor !== lastCountdownSecRef.current
     ) {
-      lastCountdownSecRef.current = remainingCeil;
-      countdownSoundRef.current?.play();
+      lastCountdownSecRef.current = remainingFloor;
+      playSound(countdownSoundRef.current);
     }
-  }, [totalDuration, finish, config]);
+  }, [totalDuration, finish, config, playSound]);
 
   const play = useCallback(() => {
     if (statusRef.current === 'finished') { return; }
+    isFirstTickRef.current = true;
     startTimestamp.current = Date.now();
     statusRef.current = 'running';
     setStatus('running');
     clearTimer();
-    intervalRef.current = setInterval(tick, 200);
+    intervalRef.current = setInterval(tick, 100);
   }, [tick]);
 
   const pause = useCallback(() => {
@@ -191,6 +223,7 @@ export function useTabataTimer(config: TabataConfig) {
     setStatus('idle');
     setDisplayElapsed(0);
     cancelTabataNotifications();
+    isFirstTickRef.current = true;
   }, []);
 
   useEffect(() => {
