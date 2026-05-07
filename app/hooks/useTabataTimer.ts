@@ -64,7 +64,9 @@ export function useTabataTimer(config: TabataConfig) {
   const baseElapsed = useRef(0);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const statusRef = useRef<TimerStatus>('idle');
-  const lastPhaseRef = useRef<TabataPhase | null>(null);
+
+  // Usamos 'idle' como estado inicial para detectar el primer cambio
+  const lastPhaseRef = useRef<TabataPhase | 'idle'>('idle');
 
   const workSound = useRef<Sound | null>(null);
   const restSound = useRef<Sound | null>(null);
@@ -84,10 +86,9 @@ export function useTabataTimer(config: TabataConfig) {
     const loadSound = (file: string) => {
       const s = new Sound(file, Sound.MAIN_BUNDLE, (error) => {
         if (error) return;
-        // OPTIMIZACIÓN: Forzar el pre-load en el buffer de Android
         s.setVolume(1);
         s.setSpeed(1);
-        s.stop();
+        s.stop(); // Evita el autoplay al cargar en Android
       });
       return s;
     };
@@ -123,66 +124,41 @@ export function useTabataTimer(config: TabataConfig) {
     finishSoundRef.current?.play();
   }, [totalDuration]);
 
-  const skip = useCallback(() => {
-    if (statusRef.current === 'finished') { return; }
-
-    // Calculamos el elapsed actual
-    const currentElapsed = statusRef.current === 'running'
-      ? baseElapsed.current + (Date.now() - startTimestamp.current) / 1000
-      : baseElapsed.current;
-
-    // Encontramos el inicio de la siguiente fase sumando el remaining actual
-    const currentInfo = getPhaseAtElapsed(config, currentElapsed);
-    if (currentInfo.phase === 'finished') { return; }
-
-    const nextElapsed = currentElapsed + currentInfo.remaining;
-
-    if (nextElapsed >= totalDuration) {
-      finish();
-      return;
-    }
-    // Actualizamos base y reiniciamos el timestamp si está corriendo
-    baseElapsed.current = nextElapsed;
-    if (statusRef.current === 'running') {
-      startTimestamp.current = Date.now();
-    }
-
-    lastPhaseRef.current = null;
-    setDisplayElapsed(nextElapsed);
-  }, [config, totalDuration, finish]);
-
   const tick = useCallback(() => {
     const e = baseElapsed.current + (Date.now() - startTimestamp.current) / 1000;
+
     if (e >= totalDuration) {
       finish();
       return;
     }
+
     setDisplayElapsed(e);
-
     const info = getPhaseAtElapsed(config, e);
-    const isStart = e < 0.15;
-    const prevInfo = getPhaseAtElapsed(config, e - 0.1); // 100ms antes
+    const currentPhase = info.phase;
 
-    if (!isStart) {
-      if (prevInfo.phase !== info.phase) {
-        Vibration.vibrate(info.phase === 'work' ? [0, 100, 50, 100] : [0, 100]);
-        lastCountdownSecRef.current = -1;
+    // --- DETECCIÓN DE CAMBIO DE FASE ---
+    if (currentPhase !== lastPhaseRef.current) {
+      // Solo vibra y suena si no es el arranque inicial y ya pasamos el primer tick
+      if (lastPhaseRef.current !== 'idle' && !isFirstTickRef.current) {
+        Vibration.vibrate(currentPhase === 'work' ? [0, 100, 50, 100] : [0, 100]);
 
-        // Solo suena si no estamos en el arranque
-        if (!isFirstTickRef.current) {
-          if (info.phase === 'work') playSound(workSound.current);
-          else if (['rest', 'restBetweenSets', 'coolDown'].includes(info.phase)) {
-            playSound(restSound.current);
-          }
+        if (currentPhase === 'work') {
+          playSound(workSound.current);
+        } else if (['rest', 'restBetweenSets', 'coolDown'].includes(currentPhase)) {
+          playSound(restSound.current);
         }
       }
-    }
-    if (e > 0.2) {
+
+      // Actualizamos estado de referencia para el siguiente tick
+      lastPhaseRef.current = currentPhase;
+      lastCountdownSecRef.current = -1;
       isFirstTickRef.current = false;
     }
+
+    // --- LÓGICA DEL BEEP (CONTEO REGRESIVO) ---
     const remainingFloor = Math.floor(info.remaining);
     if (
-      info.phase !== 'finished' &&
+      currentPhase !== 'finished' &&
       remainingFloor <= 3 &&
       remainingFloor > 0 &&
       remainingFloor !== lastCountdownSecRef.current
@@ -193,17 +169,22 @@ export function useTabataTimer(config: TabataConfig) {
   }, [totalDuration, finish, config, playSound]);
 
   const play = useCallback(() => {
-    if (statusRef.current === 'finished') { return; }
+    if (statusRef.current === 'finished') return;
+
+    // Al dar play, sincronizamos la fase actual para evitar disparos falsos
+    const initialInfo = getPhaseAtElapsed(config, baseElapsed.current);
+    lastPhaseRef.current = initialInfo.phase;
     isFirstTickRef.current = true;
+
     startTimestamp.current = Date.now();
     statusRef.current = 'running';
     setStatus('running');
     clearTimer();
     intervalRef.current = setInterval(tick, 100);
-  }, [tick]);
+  }, [tick, config]);
 
   const pause = useCallback(() => {
-    if (statusRef.current !== 'running') { return; }
+    if (statusRef.current !== 'running') return;
     const e = baseElapsed.current + (Date.now() - startTimestamp.current) / 1000;
     baseElapsed.current = Math.min(e, totalDuration);
     clearTimer();
@@ -217,7 +198,7 @@ export function useTabataTimer(config: TabataConfig) {
     clearTimer();
     baseElapsed.current = 0;
     startTimestamp.current = 0;
-    lastPhaseRef.current = null;
+    lastPhaseRef.current = 'idle';
     lastCountdownSecRef.current = -1;
     statusRef.current = 'idle';
     setStatus('idle');
@@ -225,6 +206,33 @@ export function useTabataTimer(config: TabataConfig) {
     cancelTabataNotifications();
     isFirstTickRef.current = true;
   }, []);
+
+  const skip = useCallback(() => {
+    if (statusRef.current === 'finished') return;
+
+    const currentElapsed = statusRef.current === 'running'
+      ? baseElapsed.current + (Date.now() - startTimestamp.current) / 1000
+      : baseElapsed.current;
+
+    const currentInfo = getPhaseAtElapsed(config, currentElapsed);
+    if (currentInfo.phase === 'finished') return;
+
+    const nextElapsed = currentElapsed + currentInfo.remaining;
+
+    if (nextElapsed >= totalDuration) {
+      finish();
+      return;
+    }
+
+    baseElapsed.current = nextElapsed;
+    if (statusRef.current === 'running') {
+      startTimestamp.current = Date.now();
+    }
+
+    // Importante para que el cambio de fase se detecte en el siguiente tick del skip
+    lastPhaseRef.current = currentInfo.phase;
+    setDisplayElapsed(nextElapsed);
+  }, [config, totalDuration, finish]);
 
   useEffect(() => {
     const sub = AppState.addEventListener('change', async nextState => {

@@ -16,7 +16,7 @@ export async function setupNotificationChannel() {
   await notifee.createChannel({
     id: CHANNEL_ID,
     name: 'Tabata Timer',
-    importance: AndroidImportance.DEFAULT,
+    importance: AndroidImportance.LOW,
     vibration: false,
     sound: 'none',
   });
@@ -81,7 +81,7 @@ export async function schedulePhaseNotifications(config: TabataConfig, currentEl
           body: PHASE_LABELS[tr.phase] || tr.phase,
           android: { 
             channelId: CHANNEL_ID, 
-            importance: AndroidImportance.DEFAULT,
+            importance: AndroidImportance.LOW,
           },
           ios: { sound: 'none' },
         },
