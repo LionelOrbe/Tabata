@@ -49,7 +49,7 @@ export default function TabataHomeScreen({ navigation }: Props) {
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn} disabled>
         </TouchableOpacity>
-        <Text style={styles.title}>Timer</Text>
+        <Text style={styles.title}>Entrenamientos</Text>
         <TouchableOpacity onPress={() => navigation.navigate('TabataConfig', {})} style={styles.addBtn}>
           <MaterialDesignIcons name="plus" size={24} color="#fff" />
         </TouchableOpacity>
