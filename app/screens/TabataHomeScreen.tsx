@@ -11,12 +11,14 @@ import { TabataConfig } from '../types/tabata';
 import { getWorkouts, deleteWorkout } from '../services/tabataStorage';
 import { setupNotificationChannel, requestNotificationPermission } from '../services/tabataNotifications';
 import SwipeableCard from '../components/card';
+import AboutModal from '../components/aboutModal';
 
 type Props = { navigation: NativeStackNavigationProp<any> };
 
 export default function TabataHomeScreen({ navigation }: Props) {
   const [workouts, setWorkouts] = useState<TabataConfig[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showAbout, setShowAbout] = useState(false);
 
   useFocusEffect(
     useCallback(() => {
@@ -47,7 +49,8 @@ export default function TabataHomeScreen({ navigation }: Props) {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn} disabled>
+        <TouchableOpacity onPress={() => setShowAbout(true)} style={styles.addBtn}>
+          <MaterialDesignIcons name="information-outline" size={24} color="#fff" />
         </TouchableOpacity>
         <Text style={styles.title}>Entrenamientos</Text>
         <TouchableOpacity onPress={() => navigation.navigate('TabataConfig', {})} style={styles.addBtn}>
@@ -70,6 +73,7 @@ export default function TabataHomeScreen({ navigation }: Props) {
         }
         showsVerticalScrollIndicator={false}
       />
+      <AboutModal visible={showAbout} onClose={() => setShowAbout(false)} />
     </View>
   );
 }
