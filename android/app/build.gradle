@@ -79,7 +79,7 @@ android {
 
     namespace "com.tabata"
     defaultConfig {
-        applicationId "com.tabata"
+        applicationId "com.tabata.lionelorbe"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

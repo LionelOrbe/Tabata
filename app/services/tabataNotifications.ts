@@ -1,7 +1,7 @@
 import notifee, { AndroidImportance, TriggerType } from '@notifee/react-native';
 import { TabataConfig } from '../types/tabata';
 
-const CHANNEL_ID = 'tabata-timer';
+const CHANNEL_ID = 'tabata-timer_v3';
 
 export const PHASE_LABELS: Record<string, string> = {
   prepare: '¡Prepárate!',
@@ -16,7 +16,7 @@ export async function setupNotificationChannel() {
   await notifee.createChannel({
     id: CHANNEL_ID,
     name: 'Tabata Timer',
-    importance: AndroidImportance.HIGH,
+    importance: AndroidImportance.DEFAULT,
     vibration: false,
     sound: 'none',
   });
@@ -79,8 +79,11 @@ export async function schedulePhaseNotifications(config: TabataConfig, currentEl
           id: `tabata-phase-${i}`,
           title: 'Tabata Timer',
           body: PHASE_LABELS[tr.phase] || tr.phase,
-          android: { channelId: CHANNEL_ID, importance: AndroidImportance.HIGH },
-          ios: { sound: 'default' },
+          android: { 
+            channelId: CHANNEL_ID, 
+            importance: AndroidImportance.DEFAULT,
+          },
+          ios: { sound: 'none' },
         },
         {
           type: TriggerType.TIMESTAMP,
