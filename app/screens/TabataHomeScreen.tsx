@@ -1,6 +1,7 @@
 import React, { useCallback, useState } from 'react';
 import {
-  View, Text, FlatList, TouchableOpacity, StyleSheet
+  View, Text, FlatList, TouchableOpacity, StyleSheet,
+  ActivityIndicator
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -15,12 +16,15 @@ type Props = { navigation: NativeStackNavigationProp<any> };
 
 export default function TabataHomeScreen({ navigation }: Props) {
   const [workouts, setWorkouts] = useState<TabataConfig[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useFocusEffect(
     useCallback(() => {
+      setLoading(true);
       getWorkouts().then(setWorkouts);
       setupNotificationChannel();
       requestNotificationPermission();
+      setLoading(false);
     }, []),
   );
 
@@ -57,6 +61,7 @@ export default function TabataHomeScreen({ navigation }: Props) {
         renderItem={renderItem}
         contentContainerStyle={workouts.length === 0 ? styles.emptyContainer : styles.list}
         ListEmptyComponent={
+          loading ? <ActivityIndicator size="large" color="#fff" style={{ marginTop: 240 }} /> :
           <View style={styles.empty}>
             <MaterialDesignIcons name="timer-outline" size={72} color={'#FFF'} />
             <Text style={styles.emptyTitle}>Sin entrenamientos</Text>
