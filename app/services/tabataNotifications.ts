@@ -17,8 +17,8 @@ export async function setupNotificationChannel() {
     id: CHANNEL_ID,
     name: 'Tabata Timer',
     importance: AndroidImportance.HIGH,
-    vibration: true,
-    sound: 'default',
+    vibration: false,
+    sound: 'none',
   });
 }
 
