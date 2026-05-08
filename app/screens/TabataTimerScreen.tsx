@@ -7,6 +7,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { MaterialDesignIcons } from '@react-native-vector-icons/material-design-icons';
 import { TabataConfig, TabataPhase } from '../types/tabata';
 import { useTabataTimer } from '../hooks/useTabataTimer';
+import KeepAwake from '@sayem314/react-native-keep-awake';
 
 type Props = {
   navigation: NativeStackNavigationProp<any>;
@@ -106,6 +107,7 @@ export default function TabataTimerScreen({ navigation, route }: Props) {
   return (
     <View style={[styles.container, { backgroundColor: bgColor }]}>
       <StatusBar backgroundColor={bgColor} barStyle="light-content" />
+      {status === 'running' && <KeepAwake />}
 
       {/* Header */}
       <View style={styles.header}>

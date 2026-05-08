@@ -139,8 +139,8 @@ export function useTabataTimer(config: TabataConfig) {
     // --- DETECCIÓN DE CAMBIO DE FASE ---
     if (currentPhase !== lastPhaseRef.current) {
       // Solo vibra y suena si no es el arranque inicial y ya pasamos el primer tick
-      if (lastPhaseRef.current !== 'idle' && !isFirstTickRef.current) {
-        Vibration.vibrate(currentPhase === 'work' ? [0, 100, 50, 100] : [0, 100]);
+      if (lastPhaseRef.current !== 'idle') {
+        Vibration.vibrate([0, 100]);
 
         if (currentPhase === 'work') {
           playSound(workSound.current);
@@ -172,16 +172,15 @@ export function useTabataTimer(config: TabataConfig) {
     if (statusRef.current === 'finished') return;
 
     // Al dar play, sincronizamos la fase actual para evitar disparos falsos
-    const initialInfo = getPhaseAtElapsed(config, baseElapsed.current);
-    lastPhaseRef.current = initialInfo.phase;
-    isFirstTickRef.current = true;
+    lastPhaseRef.current = 'idle';
+    isFirstTickRef.current = false;
 
     startTimestamp.current = Date.now();
     statusRef.current = 'running';
     setStatus('running');
     clearTimer();
     intervalRef.current = setInterval(tick, 100);
-  }, [tick, config]);
+  }, [tick]);
 
   const pause = useCallback(() => {
     if (statusRef.current !== 'running') return;
