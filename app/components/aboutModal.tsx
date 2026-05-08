@@ -36,7 +36,7 @@ export default function AboutModal({ visible, onClose }: Props) {
 
                     {/* Info */}
                     <Text style={styles.appName}>Timer Tabata</Text>
-                    <Text style={styles.version}>Versión 1.0.0</Text>
+                    <Text style={styles.version}>Versión 1.0.2</Text>
 
                     <View style={styles.divider} />
 
