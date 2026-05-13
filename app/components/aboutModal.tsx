@@ -1,5 +1,5 @@
 import React from 'react';
-import { Modal, View, Text, TouchableOpacity, StyleSheet, Linking } from 'react-native';
+import { Modal, View, Text, TouchableOpacity, StyleSheet, Linking, Image } from 'react-native';
 import { MaterialDesignIcons } from '@react-native-vector-icons/material-design-icons';
 import { COLORS } from '../constants/colors';
 
@@ -21,19 +21,13 @@ export default function AboutModal({ visible, onClose }: Props) {
             <TouchableOpacity style={styles.overlay} activeOpacity={1} onPress={onClose}>
                 <TouchableOpacity style={styles.card} activeOpacity={1} onPress={() => { }}>
 
-                    {/* Handle bar */}
-                    <View style={styles.handle} />
-
                     {/* Close button */}
                     <TouchableOpacity onPress={onClose} style={styles.closeBtn}>
-                        <MaterialDesignIcons name="close" size={22} color="#666" />
+                        <MaterialDesignIcons name="close" size={24} color="#666" />
                     </TouchableOpacity>
 
                     {/* Icon */}
-                    <View style={styles.iconContainer}>
-                        <MaterialDesignIcons name="timer" size={52} color="#fff" />
-                    </View>
-
+                    <Image source={require('../assets/image/Icon.png')} style={styles.iconContainer} />
                     {/* Info */}
                     <Text style={styles.appName}>Timer Tabata</Text>
                     <Text style={styles.version}>Versión 1.0.2</Text>
@@ -101,16 +95,11 @@ const styles = StyleSheet.create({
     closeBtn: {
         alignSelf: 'flex-end',
         padding: 4,
-        marginBottom: 16,
     },
     iconContainer: {
-        width: 88,
-        height: 88,
-        borderRadius: 24,
-        backgroundColor: COLORS.primary,
-        alignItems: 'center',
-        justifyContent: 'center',
-        marginBottom: 16,
+        width: 100,
+        height: 100,
+        marginBottom: 10,
     },
     appName: {
         fontSize: 22,
