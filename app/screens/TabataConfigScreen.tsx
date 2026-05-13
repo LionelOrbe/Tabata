@@ -161,7 +161,7 @@ export default function TabataConfigScreen({ navigation, route }: Props) {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: COLORS.background },
   header: {
-    backgroundColor: COLORS.primary,
+    backgroundColor: COLORS.dark,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',

@@ -18,7 +18,7 @@ function AppContent() {
   const insets = useSafeAreaInsets();
 
   return (
-    <View style={[styles.container, { paddingTop: insets.top, backgroundColor: COLORS.primary }]}>
+    <View style={[styles.container, { paddingTop: insets.top, backgroundColor: COLORS.dark }]}>
       <AppNavigator />
     </View>
   );

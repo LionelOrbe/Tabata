@@ -5,4 +5,5 @@ export const COLORS = {
   accent: '#04293A',       // Celeste
   background: '#234C6A',      // Fondo gris claro
   red: '#EB5353',          // Rojo para acciones de cancelación o alerta
+  dark: '#37353E'
 };

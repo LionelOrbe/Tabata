@@ -52,7 +52,7 @@ export default function TabataHomeScreen({ navigation }: Props) {
         <TouchableOpacity onPress={() => setShowAbout(true)} style={styles.addBtn}>
           <MaterialDesignIcons name="information-outline" size={24} color="#fff" />
         </TouchableOpacity>
-        <Text style={styles.title}>Entrenamientos</Text>
+        <Text style={styles.title}> <Text style={[styles.title, { color: '#fff' }]}>+</Text>SPORT</Text>
         <TouchableOpacity onPress={() => navigation.navigate('TabataConfig', {})} style={styles.addBtn}>
           <MaterialDesignIcons name="plus" size={24} color="#fff" />
         </TouchableOpacity>
@@ -81,7 +81,7 @@ export default function TabataHomeScreen({ navigation }: Props) {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: COLORS.background },
   header: {
-    backgroundColor: COLORS.primary,
+    backgroundColor: COLORS.dark,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
@@ -92,7 +92,7 @@ const styles = StyleSheet.create({
     boxShadow: '0 2px 4px rgba(0,0,0,0.3), 0 4px 8px rgba(0,0,0,0.2)',
   },
   backBtn: { padding: 4 },
-  title: { color: '#fff', fontSize: 20, fontWeight: '700' },
+  title: { color: COLORS.primary, fontSize: 24, fontWeight: '700', fontStyle: 'italic', textShadowColor: '2px 2px 10px rgb(252, 252, 252, 0.7)', textShadowRadius: 4 },
   addBtn: {
     backgroundColor: 'rgba(255,255,255,0.25)',
     borderRadius: 20,
