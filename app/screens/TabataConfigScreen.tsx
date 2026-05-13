@@ -66,7 +66,11 @@ export default function TabataConfigScreen({ navigation, route }: Props) {
   });
 
   const adjust = (key: FieldConfig['key'], delta: number, min: number, max: number) => {
-    setValues(prev => ({ ...prev, [key]: Math.min(max, Math.max(min, prev[key] + delta)) }));
+    setValues(prev => {
+      const currentValue = Number(prev[key]);
+      const safeValue = isNaN(currentValue) ? min : currentValue;
+      return { ...prev, [key]: Math.min(max, Math.max(min, safeValue + delta)) };
+    });
   };
 
   const handleSave = async () => {
