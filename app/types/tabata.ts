@@ -9,6 +9,7 @@ export interface TabataConfig {
   restBetweenSets: number; // segundos entre series
   coolDown: number;      // segundos
   createdAt: number;
+  isNew?: boolean;   // para marcar un elemento recién creado (opcional)
 }
 
 export type TabataPhase =

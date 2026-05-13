@@ -35,13 +35,14 @@ export default function TabataHomeScreen({ navigation }: Props) {
     setWorkouts(prev => prev.filter(w => w.id !== item.id));
   };
 
-  const renderItem = ({ item }: { item: TabataConfig }) => {
+  const renderItem = ({ item }: { item: TabataConfig, index: number }) => {
     return (
       <SwipeableCard
         item={item}
         onDelete={() => handleDelete(item)}
         onEdit={() => navigation.navigate('TabataConfig', { config: item })}
         onStart={() => navigation.navigate('TabataTimer', { config: item })}
+        isNew={item.isNew}
       />
     );
   };

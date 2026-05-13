@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native'
-import React from 'react'
+import React, { useEffect } from 'react'
 import Animated, {
-    useSharedValue, useAnimatedStyle, withTiming, runOnJS,
+    useSharedValue, useAnimatedStyle, withTiming, runOnJS, withSequence, withDelay
 } from 'react-native-reanimated';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import { TabataConfig } from '../types/tabata';
@@ -12,15 +12,33 @@ import { MaterialDesignIcons } from '@react-native-vector-icons/material-design-
 const SWIPE_THRESHOLD = 80;
 
 export default function SwipeableCard({
-    item, onDelete, onEdit, onStart,
+    item, onDelete, onEdit, onStart, isNew
 }: {
     item: TabataConfig;
     onDelete: () => void;
     onEdit: () => void;
     onStart: () => void;
+    isNew?: boolean;
 }) {
+
     const translateX = useSharedValue(0);
     const total = getTotalDuration(item);
+
+    useEffect(() => {
+    const runHint = async () => {
+        if (!isNew) {
+            // Espera 1200ms para que el usuario ya esté mirando
+            translateX.value = withDelay(1200,
+                withSequence(
+                    withTiming(85, { duration: 600 }),
+                    withTiming(75, { duration: 500 }),
+                    withTiming(0,  { duration: 300 })
+                )
+            );
+        }
+    };
+    runHint();
+}, [isNew, translateX]);
 
     function formatDuration(seconds: number): string {
         const m = Math.floor(seconds / 60);
