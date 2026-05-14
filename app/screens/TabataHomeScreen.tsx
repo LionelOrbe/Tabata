@@ -1,7 +1,8 @@
 import React, { useCallback, useState } from 'react';
 import {
   View, Text, FlatList, TouchableOpacity, StyleSheet,
-  ActivityIndicator
+  ActivityIndicator,
+  Image
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -53,8 +54,8 @@ export default function TabataHomeScreen({ route, navigation }: Props) {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => setShowAbout(true)} style={styles.addBtn}>
-          <MaterialDesignIcons name="information-outline" size={24} color="#fff" />
+        <TouchableOpacity onPress={() => setShowAbout(true)} >
+          <Image source={require('../assets/image/Icon-nobg.png')} style={{ width: 50, height: 50 }} />
         </TouchableOpacity>
         <Text style={styles.title}>Entrenamientos</Text>
         <TouchableOpacity onPress={() => navigation.navigate('TabataConfig', {})} style={styles.addBtn}>
@@ -90,7 +91,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 16,
-    paddingVertical: 14,
+    paddingVertical: 6,
     borderBottomLeftRadius: 20,
     borderBottomRightRadius: 20,
     boxShadow: '0 2px 4px rgba(0,0,0,0.3), 0 4px 8px rgba(0,0,0,0.2)',
