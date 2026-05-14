@@ -13,9 +13,9 @@ import { setupNotificationChannel, requestNotificationPermission } from '../serv
 import SwipeableCard from '../components/card';
 import AboutModal from '../components/aboutModal';
 
-type Props = { navigation: NativeStackNavigationProp<any> };
+type Props = { navigation: NativeStackNavigationProp<any>, route: any };
 
-export default function TabataHomeScreen({ navigation }: Props) {
+export default function TabataHomeScreen({ route, navigation }: Props) {
   const [workouts, setWorkouts] = useState<TabataConfig[]>([]);
   const [loading, setLoading] = useState(true);
   const [showAbout, setShowAbout] = useState(false);
@@ -23,11 +23,14 @@ export default function TabataHomeScreen({ navigation }: Props) {
   useFocusEffect(
     useCallback(() => {
       setLoading(true);
-      getWorkouts().then(setWorkouts);
+      getWorkouts().then(works => {
+            const newId = route.params?.newWorkoutId;
+            setWorkouts(works.map(w => ({ ...w, isNew: w.id === newId })));  // 👈
+        });
       setupNotificationChannel();
       requestNotificationPermission();
       setLoading(false);
-    }, []),
+    }, [route.params?.newWorkoutId]),
   );
 
   const handleDelete = async (item: TabataConfig) => {
@@ -35,7 +38,7 @@ export default function TabataHomeScreen({ navigation }: Props) {
     setWorkouts(prev => prev.filter(w => w.id !== item.id));
   };
 
-  const renderItem = ({ item }: { item: TabataConfig, index: number }) => {
+  const renderItem = ({ item }: { item: TabataConfig }) => {
     return (
       <SwipeableCard
         item={item}

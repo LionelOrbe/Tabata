@@ -86,7 +86,7 @@ export default function TabataConfigScreen({ navigation, route }: Props) {
       createdAt: existing?.createdAt ?? Date.now(),
     };
     await saveWorkout(config);
-    navigation.goBack();
+    navigation.navigate('TabataHome', { newWorkoutId: existing ? null : config.id });
   };
 
   const previewConfig = { id: '', name, createdAt: 0, ...values };

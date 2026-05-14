@@ -25,20 +25,15 @@ export default function SwipeableCard({
     const total = getTotalDuration(item);
 
     useEffect(() => {
-    const runHint = async () => {
-        if (!isNew) {
-            // Espera 1200ms para que el usuario ya esté mirando
-            translateX.value = withDelay(1200,
-                withSequence(
-                    withTiming(85, { duration: 600 }),
-                    withTiming(75, { duration: 500 }),
-                    withTiming(0,  { duration: 300 })
-                )
-            );
-        }
-    };
-    runHint();
-}, [isNew, translateX]);
+        if (!isNew) return;
+        translateX.value = withDelay(1200,
+            withSequence(
+                withTiming(85, { duration: 600 }),
+                withTiming(75, { duration: 500 }),
+                withTiming(0, { duration: 300 })
+            )
+        );
+    }, [isNew, translateX]);
 
     function formatDuration(seconds: number): string {
         const m = Math.floor(seconds / 60);
@@ -48,7 +43,7 @@ export default function SwipeableCard({
 
     const pan = Gesture.Pan()
         .activeOffsetX([-15, 15])
-        .failOffsetY([-10, 10])  
+        .failOffsetY([-10, 10])
         .onUpdate(e => {
             if (e.translationX > 0) translateX.value = e.translationX;
         })
