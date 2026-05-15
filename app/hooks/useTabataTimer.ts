@@ -94,8 +94,8 @@ export function useTabataTimer(config: TabataConfig) {
     };
 
     workSound.current = loadSound('whistle.wav');
-    restSound.current = loadSound('rest.mp3');
-    finishSoundRef.current = loadSound('gong.mp3');
+    restSound.current = loadSound('rest.wav');
+    finishSoundRef.current = loadSound('gong.wav');
     countdownSoundRef.current = loadSound('beep.wav');
 
     return () => {
