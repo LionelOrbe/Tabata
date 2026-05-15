@@ -9,6 +9,7 @@ type Props = {
 };
 
 const MY_PORTFOLIO = 'https://lionelorbe.vercel.app/';
+const APP_VERSION = '1.0.3';
 
 export default function AboutModal({ visible, onClose }: Props) {
     return (
@@ -30,7 +31,7 @@ export default function AboutModal({ visible, onClose }: Props) {
                     <Image source={require('../assets/image/Icon.png')} style={styles.iconContainer} />
                     {/* Info */}
                     <Text style={styles.appName}>Timer Tabata</Text>
-                    <Text style={styles.version}>Versión 1.0.2</Text>
+                    <Text style={styles.version}>Versión {APP_VERSION}</Text>
 
                     <View style={styles.divider} />
 
