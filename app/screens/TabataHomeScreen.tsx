@@ -25,9 +25,9 @@ export default function TabataHomeScreen({ route, navigation }: Props) {
     useCallback(() => {
       setLoading(true);
       getWorkouts().then(works => {
-            const newId = route.params?.newWorkoutId;
-            setWorkouts(works.map(w => ({ ...w, isNew: w.id === newId })));  // 👈
-        });
+        const newId = route.params?.newWorkoutId;
+        setWorkouts(works.map(w => ({ ...w, isNew: w.id === newId })));  // 👈
+      });
       setupNotificationChannel();
       requestNotificationPermission();
       setLoading(false);
@@ -47,6 +47,7 @@ export default function TabataHomeScreen({ route, navigation }: Props) {
         onEdit={() => navigation.navigate('TabataConfig', { config: item })}
         onStart={() => navigation.navigate('TabataTimer', { config: item })}
         isNew={item.isNew}
+        setSelectedWorkout={() => navigation.navigate('WorkoutDetail', { workout: item })}
       />
     );
   };
@@ -70,11 +71,11 @@ export default function TabataHomeScreen({ route, navigation }: Props) {
         contentContainerStyle={workouts.length === 0 ? styles.emptyContainer : styles.list}
         ListEmptyComponent={
           loading ? <ActivityIndicator size="large" color="#fff" style={{ marginTop: 240 }} /> :
-          <View style={styles.empty}>
-            <MaterialDesignIcons name="timer-outline" size={72} color={'#FFF'} />
-            <Text style={styles.emptyTitle}>Sin entrenamientos</Text>
-            <Text style={styles.emptyText}>Toca + para crear tu primer entrenamiento Tabata</Text>
-          </View>
+            <View style={styles.empty}>
+              <MaterialDesignIcons name="timer-outline" size={72} color={'#FFF'} />
+              <Text style={styles.emptyTitle}>Sin entrenamientos</Text>
+              <Text style={styles.emptyText}>Toca + para crear tu primer entrenamiento Tabata</Text>
+            </View>
         }
         showsVerticalScrollIndicator={false}
       />

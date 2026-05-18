@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { TabataConfig } from '../types/tabata';
+import { TabataConfig, WorkoutLog } from '../types/tabata';
 
 const KEY = '@tabata_workouts';
 
@@ -26,4 +26,23 @@ export async function saveWorkout(config: TabataConfig): Promise<void> {
 export async function deleteWorkout(id: string): Promise<void> {
   const workouts = await getWorkouts();
   await AsyncStorage.setItem(KEY, JSON.stringify(workouts.filter(w => w.id !== id)));
+}
+
+export async function saveWorkoutLog(id: string, log: WorkoutLog): Promise<void> {
+    const workouts = await getWorkouts();
+    const idx = workouts.findIndex(w => w.id === id);
+    if (idx < 0) return;
+
+    workouts[idx].logs = [...(workouts[idx].logs ?? []), log];
+    await AsyncStorage.setItem(KEY, JSON.stringify(workouts));
+}
+
+export async function deleteWorkoutLog(workoutId: string, logIndex: number): Promise<void> {
+    const workouts = await getWorkouts();
+    const idx = workouts.findIndex(w => w.id === workoutId);
+    if (idx < 0) return;
+
+    const reversedIndex = (workouts[idx].logs?.length ?? 0) - 1 - logIndex;
+    workouts[idx].logs?.splice(reversedIndex, 1);
+    await AsyncStorage.setItem(KEY, JSON.stringify(workouts));
 }
