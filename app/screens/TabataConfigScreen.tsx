@@ -12,7 +12,7 @@ import { getTotalDuration } from '../hooks/useTabataTimer';
 
 type Props = {
   navigation: NativeStackNavigationProp<any>;
-  route: any; 
+  route: any;
 };
 
 const DEFAULT_CONFIG: Omit<TabataConfig, 'id' | 'name' | 'createdAt'> = {
@@ -131,7 +131,7 @@ export default function TabataConfigScreen({ navigation, route }: Props) {
                     <MaterialDesignIcons name="minus" size={18} color={COLORS.primary} />
                   </TouchableOpacity>
                   <Text style={styles.stepValue}>
-                    {values[field.key]}
+                    {values[field.key] as number}
                     <Text style={styles.stepUnit}> {field.unit}</Text>
                   </Text>
                   <TouchableOpacity

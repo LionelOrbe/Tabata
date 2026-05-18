@@ -12,12 +12,13 @@ import { MaterialDesignIcons } from '@react-native-vector-icons/material-design-
 const SWIPE_THRESHOLD = 80;
 
 export default function SwipeableCard({
-    item, onDelete, onEdit, onStart, isNew
+    item, onDelete, onEdit, onStart, isNew, setSelectedWorkout
 }: {
     item: TabataConfig;
     onDelete: () => void;
     onEdit: () => void;
     onStart: () => void;
+    setSelectedWorkout: (workout: TabataConfig | null) => void;
     isNew?: boolean;
 }) {
 
@@ -67,31 +68,33 @@ export default function SwipeableCard({
 
     return (
         <GestureDetector gesture={pan}>
-            <Animated.View style={styles.swipeContainer}>
-                {/* Fondo rojo que aparece mientras arrastrás */}
-                <Animated.View style={[styles.deleteBackground, redOpacity]}>
-                    <MaterialDesignIcons name="trash-can-outline" size={22} color={'#FFF'} />
-                    <Text style={styles.deleteLabel}>Eliminar</Text>
+            <TouchableOpacity activeOpacity={0.8} onPress={() => setSelectedWorkout(item)}>
+                <Animated.View style={styles.swipeContainer}>
+                    {/* Fondo rojo que aparece mientras arrastrás */}
+                    <Animated.View style={[styles.deleteBackground, redOpacity]}>
+                        <MaterialDesignIcons name="trash-can-outline" size={22} color={'#FFF'} />
+                        <Text style={styles.deleteLabel}>Eliminar</Text>
+                    </Animated.View>
+                    <Animated.View style={[styles.card, animStyle]}>
+                        <View style={styles.cardBorder} />
+                        <View style={styles.cardLeft}>
+                            <Text style={styles.cardName}>{item.name}</Text>
+                            <Text style={styles.cardSub}>
+                                {item.sets} serie{item.sets !== 1 ? 's' : ''} · {item.cycles} ciclo{item.cycles !== 1 ? 's' : ''} · {item.work}s trabajo / {item.rest}s descanso
+                            </Text>
+                            <Text style={styles.cardTotal}>Total: {formatDuration(total)}</Text>
+                        </View>
+                        <View style={styles.cardRight}>
+                            <TouchableOpacity onPress={onEdit}>
+                                <MaterialDesignIcons name="pencil-outline" size={22} color={COLORS.primary} />
+                            </TouchableOpacity>
+                            <TouchableOpacity onPress={onStart} style={styles.playBtn}>
+                                <MaterialDesignIcons name="play" size={22} color="#fff" />
+                            </TouchableOpacity>
+                        </View>
+                    </Animated.View>
                 </Animated.View>
-                <Animated.View style={[styles.card, animStyle]}>
-                    <View style={styles.cardBorder} />
-                    <View style={styles.cardLeft}>
-                        <Text style={styles.cardName}>{item.name}</Text>
-                        <Text style={styles.cardSub}>
-                            {item.sets} serie{item.sets !== 1 ? 's' : ''} · {item.cycles} ciclo{item.cycles !== 1 ? 's' : ''} · {item.work}s trabajo / {item.rest}s descanso
-                        </Text>
-                        <Text style={styles.cardTotal}>Total: {formatDuration(total)}</Text>
-                    </View>
-                    <View style={styles.cardRight}>
-                        <TouchableOpacity onPress={onEdit}>
-                            <MaterialDesignIcons name="pencil-outline" size={22} color={COLORS.primary} />
-                        </TouchableOpacity>
-                        <TouchableOpacity onPress={onStart} style={styles.playBtn}>
-                            <MaterialDesignIcons name="play" size={22} color="#fff" />
-                        </TouchableOpacity>
-                    </View>
-                </Animated.View>
-            </Animated.View>
+            </TouchableOpacity>
         </GestureDetector>
     );
 }

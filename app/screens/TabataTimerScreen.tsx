@@ -1,13 +1,14 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import {
   View, Text, TouchableOpacity, StyleSheet,
   StatusBar, Alert,
 } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { MaterialDesignIcons } from '@react-native-vector-icons/material-design-icons';
-import { TabataConfig, TabataPhase } from '../types/tabata';
+import { TabataConfig, TabataPhase, WorkoutLog } from '../types/tabata';
 import { useTabataTimer } from '../hooks/useTabataTimer';
 import KeepAwake from '@sayem314/react-native-keep-awake';
+import { saveWorkoutLog } from '../services/tabataStorage';
 
 type Props = {
   navigation: NativeStackNavigationProp<any>;
@@ -32,7 +33,7 @@ const PHASE_LABELS: Record<TabataPhase, string> = {
   finished: '¡Completado!',
 };
 
-const PHASE_ICONS: Record<TabataPhase, 
+const PHASE_ICONS: Record<TabataPhase,
   | "clock-outline"
   | "lightning-bolt"
   | "leaf"
@@ -62,14 +63,57 @@ export default function TabataTimerScreen({ navigation, route }: Props) {
   const bgColor = PHASE_COLORS[phaseInfo.phase];
   const progressPct = totalDuration > 0 ? Math.min(displayElapsed / totalDuration, 1) * 100 : 0;
 
+  useEffect(() => {
+    if (phaseInfo.phase !== 'finished') return;
+
+    const now = new Date();
+    const log: WorkoutLog = {
+      date: now.toISOString().split('T')[0],          // '2026-05-15'
+      time: now.toTimeString().slice(0, 5),            // '14:32'
+      completed: true,
+      totalTime: displayElapsed,
+    };
+    saveWorkoutLog(config.id, log);
+  }, [config.id, displayElapsed, phaseInfo.phase]);
+
   const handleBack = () => {
+    const saveIncomplete = () => {
+      if (displayElapsed > 0 && status !== 'finished') {
+        const now = new Date();
+        saveWorkoutLog(config.id, {
+          date: now.toISOString().split('T')[0],
+          time: now.toTimeString().slice(0, 5),
+          completed: false,
+          totalTime: displayElapsed,
+        });
+      }
+    };
+
     if (status === 'running') {
       pause();
       Alert.alert('Salir del entrenamiento', '¿Deseas salir? El progreso se perderá.', [
         { text: 'Continuar', onPress: play },
-        { text: 'Salir', style: 'destructive', onPress: () => { reset(); navigation.goBack(); } },
+        {
+          text: 'Salir', style: 'destructive', onPress: () => {
+            saveIncomplete();
+            reset();
+            navigation.goBack();
+          }
+        },
+      ]);
+    } else if (status === 'paused') {
+      Alert.alert('Salir del entrenamiento', '¿Deseas salir? El progreso se perderá.', [
+        { text: 'Continuar' },
+        {
+          text: 'Salir', style: 'destructive', onPress: () => {
+            saveIncomplete();
+            reset();
+            navigation.goBack();
+          }
+        },
       ]);
     } else {
+      saveIncomplete();
       reset();
       navigation.goBack();
     }
@@ -164,7 +208,7 @@ export default function TabataTimerScreen({ navigation, route }: Props) {
       <View style={styles.controls}>
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           {isFinished ? (
-            <TouchableOpacity style={[styles.mainBtn, {marginBottom: 45}]} onPress={reset}>
+            <TouchableOpacity style={[styles.mainBtn, { marginBottom: 45 }]} onPress={reset}>
               <MaterialDesignIcons name="restart" size={32} color="#fff" />
               <Text style={styles.mainBtnText}>Repetir</Text>
             </TouchableOpacity>

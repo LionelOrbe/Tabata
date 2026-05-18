@@ -1,3 +1,10 @@
+export type WorkoutLog = {
+    date: string;        // '2025-05-15'
+    time: string;        // '14:32'
+    completed: boolean;
+    totalTime: number;   // en segundos
+};
+
 export interface TabataConfig {
   id: string;
   name: string;
@@ -10,6 +17,7 @@ export interface TabataConfig {
   coolDown: number;      // segundos
   createdAt: number;
   isNew?: boolean;   // para marcar un elemento recién creado (opcional)
+  logs?: WorkoutLog[]; 
 }
 
 export type TabataPhase =
