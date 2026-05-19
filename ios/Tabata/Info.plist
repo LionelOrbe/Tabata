@@ -34,7 +34,7 @@
 		<true/>
 	</dict>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string></string>
+	<string/>
 	<key>RCTNewArchEnabled</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>
@@ -58,5 +58,9 @@
 	<false/>
 	<key>NSUserNotificationUsageDescription</key>
 	<string>El timer Tabata usa notificaciones para avisarte los cambios de fase cuando la app está en segundo plano.</string>
+	<key>UIAppFonts</key>
+	<array>
+		<string>MaterialDesignIcons.ttf</string>
+	</array>
 </dict>
 </plist>
