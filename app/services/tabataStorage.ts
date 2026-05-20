@@ -16,7 +16,7 @@ export async function saveWorkout(config: TabataConfig): Promise<void> {
   const workouts = await getWorkouts();
   const idx = workouts.findIndex(w => w.id === config.id);
   if (idx >= 0) {
-    workouts[idx] = config;
+    workouts[idx] = { ...workouts[idx], ...config, logs: workouts[idx].logs };
   } else {
     workouts.unshift(config);
   }
