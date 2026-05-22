@@ -118,32 +118,59 @@ export default function TabataConfigScreen({ navigation, route }: Props) {
 
         {/* Parámetros */}
         <View style={styles.card}>
-          {FIELDS.map((field, idx) => (
-            <View key={field.key}>
-              {idx > 0 && <View style={styles.divider} />}
-              <View style={styles.row}>
-                <Text style={styles.rowLabel}>{field.label}</Text>
-                <View style={styles.stepper}>
-                  <TouchableOpacity
-                    style={styles.stepBtn}
-                    onPress={() => adjust(field.key, -field.step, field.min, field.max)}
-                  >
-                    <MaterialDesignIcons name="minus" size={18} color={COLORS.primary} />
-                  </TouchableOpacity>
-                  <Text style={styles.stepValue}>
-                    {values[field.key] as number}
-                    <Text style={styles.stepUnit}> {field.unit}</Text>
-                  </Text>
-                  <TouchableOpacity
-                    style={styles.stepBtn}
-                    onPress={() => adjust(field.key, field.step, field.min, field.max)}
-                  >
-                    <MaterialDesignIcons name="plus" size={18} color={COLORS.primary} />
-                  </TouchableOpacity>
+          {FIELDS.map((field, idx) => {
+            // 1. Obtenemos el valor actual de este campo en el estado
+            const currentValue = values[field.key] as number;
+
+            // 2. Evaluamos si llegó al mínimo o al máximo establecido
+            const isMin = currentValue <= field.min;
+            const isMax = currentValue >= field.max;
+
+            return (
+              <View key={field.key}>
+                {idx > 0 && <View style={styles.divider} />}
+                <View style={styles.row}>
+                  <Text style={styles.rowLabel}>{field.label}</Text>
+
+                  <View style={styles.stepper}>
+                    {/* BOTÓN MENOS (-) */}
+                    <TouchableOpacity
+                      // Combinamos el estilo base con una opacidad reducida si es el mínimo
+                      style={[styles.stepBtn, isMin && { opacity: 0.20 }]}
+                      onPress={() => adjust(field.key, -field.step, field.min, field.max)}
+                      disabled={isMin} // Evita que dispare la función
+                    >
+                      <MaterialDesignIcons
+                        name="minus"
+                        size={18}
+                        color={isMin ? '#aaa' : COLORS.primary} // Cambia el color del icono a gris si se deshabilita
+                      />
+                    </TouchableOpacity>
+
+                    <Text style={styles.stepValue}>
+                      {currentValue}
+                      <Text style={styles.stepUnit}> {field.unit}</Text>
+                    </Text>
+
+                    {/* BOTÓN MÁS (+) */}
+                    <TouchableOpacity
+                      // Ya que estamos, también protegemos y estilamos el límite máximo
+                      style={[styles.stepBtn, isMax && { opacity: 0.20 }]}
+                      onPress={() => adjust(field.key, field.step, field.min, field.max)}
+                      disabled={isMax}
+                    >
+                      <MaterialDesignIcons
+                        name="plus"
+                        size={18}
+                        color={isMax ? '#aaa' : COLORS.primary}
+                      />
+                    </TouchableOpacity>
+                  </View>
+
                 </View>
               </View>
-            </View>
-          ))}
+            );
+          })}
         </View>
 
         {/* Total */}
