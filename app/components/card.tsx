@@ -80,7 +80,7 @@ export default function SwipeableCard({
                         <View style={styles.cardLeft}>
                             <Text style={styles.cardName}>{item.name}</Text>
                             <Text style={styles.cardSub}>
-                                {item.sets} serie{item.sets !== 1 ? 's' : ''} · {item.cycles} ciclo{item.cycles !== 1 ? 's' : ''} · {item.work}s trabajo / {item.rest}s descanso
+                                {item.sets} serie{item.sets !== 1 ? 's' : ''} · {item.cycles} ciclo{item.cycles !== 1 ? 's' : ''} · {item.work}s trab. / {item.rest}s desc.
                             </Text>
                             <Text style={styles.cardTotal}>Total: {formatDuration(total)}</Text>
                         </View>
