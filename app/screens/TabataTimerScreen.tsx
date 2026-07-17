@@ -58,7 +58,7 @@ function formatTime(seconds: number): string {
 
 export default function TabataTimerScreen({ navigation, route }: Props) {
   const config: TabataConfig = route.params.config;
-  const { phaseInfo, status, totalDuration, displayElapsed, play, pause, reset, skip } = useTabataTimer(config);
+  const { phaseInfo, status, totalDuration, displayElapsed, realElapsed, play, pause, reset, skip } = useTabataTimer(config);
 
   const bgColor = PHASE_COLORS[phaseInfo.phase];
   const progressPct = totalDuration > 0 ? Math.min(displayElapsed / totalDuration, 1) * 100 : 0;
@@ -71,10 +71,10 @@ export default function TabataTimerScreen({ navigation, route }: Props) {
       date: now.toISOString().split('T')[0],          // '2026-05-15'
       time: now.toTimeString().slice(0, 5),            // '14:32'
       completed: true,
-      totalTime: displayElapsed,
+      totalTime: realElapsed,
     };
     saveWorkoutLog(config.id, log);
-  }, [config.id, displayElapsed, phaseInfo.phase]);
+  }, [config.id, realElapsed, phaseInfo.phase]);
 
   const handleBack = () => {
     const saveIncomplete = () => {
@@ -84,7 +84,7 @@ export default function TabataTimerScreen({ navigation, route }: Props) {
           date: now.toISOString().split('T')[0],
           time: now.toTimeString().slice(0, 5),
           completed: false,
-          totalTime: displayElapsed,
+          totalTime: realElapsed,
         });
       }
     };

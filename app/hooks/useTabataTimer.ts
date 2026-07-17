@@ -74,6 +74,7 @@ export function useTabataTimer(config: TabataConfig) {
   const countdownSoundRef = useRef<Sound | null>(null);
   const lastCountdownSecRef = useRef(-1);
   const isFirstTickRef = useRef(true);
+  const skippedTimeRef = useRef(0);
 
   const playSound = useCallback((sound?: Sound | null) => {
     if (!sound) return;
@@ -204,6 +205,7 @@ export function useTabataTimer(config: TabataConfig) {
     setDisplayElapsed(0);
     cancelTabataNotifications();
     isFirstTickRef.current = true;
+    skippedTimeRef.current = 0;
   }, []);
 
   const skip = useCallback(() => {
@@ -217,6 +219,7 @@ export function useTabataTimer(config: TabataConfig) {
     if (currentInfo.phase === 'finished') return;
 
     const nextElapsed = currentElapsed + currentInfo.remaining;
+    skippedTimeRef.current += currentInfo.remaining;
 
     if (nextElapsed >= totalDuration) {
       finish();
@@ -254,6 +257,7 @@ export function useTabataTimer(config: TabataConfig) {
   useEffect(() => () => clearTimer(), []);
 
   const phaseInfo = useMemo(() => getPhaseAtElapsed(config, displayElapsed), [config, displayElapsed]);
+  const realElapsed = Math.max(0, displayElapsed - skippedTimeRef.current);
 
-  return { phaseInfo, status, totalDuration, displayElapsed, play, pause, reset, skip };
+  return { phaseInfo, status, totalDuration, displayElapsed, realElapsed, play, pause, reset, skip };
 }
